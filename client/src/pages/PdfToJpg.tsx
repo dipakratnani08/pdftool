@@ -18,7 +18,7 @@ const PdfToJpg: React.FC = () => {
   const { toast } = useToast();
   
   // Fetch all available PDFs
-  const { data: allFiles, isLoading } = useQuery({
+  const { data: allFiles = [], isLoading } = useQuery<FileItem[]>({
     queryKey: ['/api/files'],
     staleTime: 30000, // 30 seconds
   });

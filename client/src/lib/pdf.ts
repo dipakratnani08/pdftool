@@ -147,3 +147,61 @@ export async function compressPdf(fileId: number, options: any = {}): Promise<an
 export function downloadFile(fileId: number): void {
   window.open(`/api/download/${fileId}`, '_blank');
 }
+
+/**
+ * Generate PDF preview for a specific page
+ */
+export async function generatePdfPreview(file: File, pageNumber: number = 1): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = async (event) => {
+      try {
+        const arrayBuffer = event.target?.result as ArrayBuffer;
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        
+        // Make sure the requested page exists
+        const pageCount = pdfDoc.getPageCount();
+        if (pageNumber < 1 || pageNumber > pageCount) {
+          throw new Error(`Page number ${pageNumber} is out of bounds. PDF has ${pageCount} pages.`);
+        }
+        
+        // Get the requested page (0-based index)
+        const page = pdfDoc.getPages()[pageNumber - 1];
+        
+        // Create a new document with just this page
+        const newPdfDoc = await PDFDocument.create();
+        const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [pageNumber - 1]);
+        newPdfDoc.addPage(copiedPage);
+        
+        // Convert to base64 for display
+        const pdfBytes = await newPdfDoc.saveAsBase64({ dataUri: true });
+        resolve(pdfBytes);
+      } catch (error) {
+        console.error("Error generating PDF preview:", error);
+        reject(error);
+      }
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Error reading file for preview'));
+    };
+    
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+/**
+ * Get a file blob from server by ID
+ */
+export async function getFileBlob(fileId: number): Promise<Blob> {
+  const response = await fetch(`/api/download/${fileId}`, {
+    credentials: 'include',
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to download file: ${response.statusText}`);
+  }
+  
+  return await response.blob();
+}

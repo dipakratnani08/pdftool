@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   FileText, FilePlus2, FileOutput, FileSearch, Edit, Lock, LayoutDashboard, 
@@ -269,193 +270,302 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
           onClick={handleItemClick}
         />
         
-        <div className="mt-6 mb-3 px-4">
-          <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
-          </div>
-          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 uppercase tracking-wider">Core PDF Tools</h3>
-        </div>
-
-        <SidebarItem 
-          href="/merge" 
-          icon={<FilePlus2 />} 
-          label="Merge PDFs" 
-          isActive={location === "/merge"} 
-          onClick={handleItemClick}
-        />
+        {/* ORGANIZE PDF SECTION */}
+        <SidebarCategory 
+          title="Organize PDF" 
+          gradient="blue-purple" 
+          defaultOpen={true}
+        >
+          <SidebarItem 
+            href="/merge" 
+            icon={<FilePlus2 />} 
+            label="Merge PDF" 
+            isActive={location === "/merge"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/split" 
+            icon={<Scissors />} 
+            label="Split PDF" 
+            isActive={location === "/split"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/remove-pages" 
+            icon={<Trash2 />} 
+            label="Remove pages" 
+            isActive={location === "/remove-pages"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/extract-pages" 
+            icon={<FileMinus />} 
+            label="Extract pages" 
+            isActive={location === "/extract-pages"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/organize-pdf" 
+            icon={<FileText />} 
+            label="Organize PDF" 
+            isActive={location === "/organize-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/scan-to-pdf" 
+            icon={<ScanLine />} 
+            label="Scan to PDF" 
+            isActive={location === "/scan-to-pdf"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
         
-        <SidebarItem 
-          href="/split" 
-          icon={<FileText />} 
-          label="Split PDF" 
-          isActive={location === "/split"} 
-          onClick={handleItemClick}
-        />
+        {/* OPTIMIZE PDF SECTION */}
+        <SidebarCategory 
+          title="Optimize PDF" 
+          gradient="green-cyan" 
+          defaultOpen={false}
+        >
+          <SidebarItem 
+            href="/compress" 
+            icon={<FileOutput />} 
+            label="Compress PDF" 
+            isActive={location === "/compress"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/repair" 
+            icon={<Wrench />} 
+            label="Repair PDF" 
+            isActive={location === "/repair"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/ocr" 
+            icon={<FileSearch />} 
+            label="OCR PDF" 
+            isActive={location === "/ocr"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
         
-        <SidebarItem 
-          href="/compress" 
-          icon={<FileOutput />} 
-          label="Compress PDF" 
-          isActive={location === "/compress"} 
-          onClick={handleItemClick}
-        />
+        {/* CONVERT TO PDF SECTION */}
+        <SidebarCategory 
+          title="Convert to PDF" 
+          gradient="purple-pink" 
+          defaultOpen={false}
+        >
+          <SidebarItem 
+            href="/jpg-to-pdf" 
+            icon={<Image />} 
+            label="JPG to PDF" 
+            isActive={location === "/jpg-to-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/word-to-pdf" 
+            icon={<FileText />} 
+            label="Word to PDF" 
+            isActive={location === "/word-to-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/excel-to-pdf" 
+            icon={<PanelLeft />} 
+            label="Excel to PDF" 
+            isActive={location === "/excel-to-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/powerpoint-to-pdf" 
+            icon={<File />} 
+            label="PowerPoint to PDF" 
+            isActive={location === "/powerpoint-to-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/html-to-pdf" 
+            icon={<FileType />} 
+            label="HTML to PDF" 
+            isActive={location === "/html-to-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/text-to-pdf" 
+            icon={<Text />} 
+            label="Text to PDF" 
+            isActive={location === "/text-to-pdf"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
         
-        <SidebarItem 
-          href="/edit" 
-          icon={<Edit />} 
-          label="Edit PDF" 
-          isActive={location === "/edit"} 
-          onClick={handleItemClick}
-        />
+        {/* CONVERT FROM PDF SECTION */}
+        <SidebarCategory 
+          title="Convert from PDF" 
+          gradient="amber-red" 
+          defaultOpen={false}
+        >
+          <SidebarItem 
+            href="/pdf-to-jpg" 
+            icon={<Image />} 
+            label="PDF to JPG" 
+            isActive={location === "/pdf-to-jpg"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/pdf-to-word" 
+            icon={<FileText />} 
+            label="PDF to Word" 
+            isActive={location === "/pdf-to-word"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/pdf-to-excel" 
+            icon={<PanelLeft />} 
+            label="PDF to Excel" 
+            isActive={location === "/pdf-to-excel"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/pdf-to-powerpoint" 
+            icon={<File />} 
+            label="PDF to PowerPoint" 
+            isActive={location === "/pdf-to-powerpoint"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/pdf-to-html" 
+            icon={<FileType />} 
+            label="PDF to HTML" 
+            isActive={location === "/pdf-to-html"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/pdf-to-text" 
+            icon={<Text />} 
+            label="PDF to Text" 
+            isActive={location === "/pdf-to-text"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
         
-        <SidebarItem 
-          href="/secure" 
-          icon={<Shield />} 
-          label="Protect PDF" 
-          isActive={location === "/secure"} 
-          onClick={handleItemClick}
-        />
+        {/* EDIT PDF SECTION */}
+        <SidebarCategory 
+          title="Edit PDF" 
+          gradient="blue-purple" 
+          defaultOpen={false}
+        >
+          <SidebarItem 
+            href="/edit" 
+            icon={<Edit />} 
+            label="Edit PDF" 
+            isActive={location === "/edit"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/rotate" 
+            icon={<RotateCw />} 
+            label="Rotate PDF" 
+            isActive={location === "/rotate"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/add-page-numbers" 
+            icon={<Hash />} 
+            label="Add page numbers" 
+            isActive={location === "/add-page-numbers"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/add-watermark" 
+            icon={<FileSignature />} 
+            label="Add watermark" 
+            isActive={location === "/add-watermark"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
         
-        <SidebarItem 
-          href="/rotate" 
-          icon={<RotateCw />} 
-          label="Rotate PDF" 
-          isActive={location === "/rotate"} 
-          onClick={handleItemClick}
-        />
+        {/* PDF SECURITY SECTION */}
+        <SidebarCategory 
+          title="PDF Security" 
+          gradient="green-cyan" 
+          defaultOpen={false}
+        >
+          <SidebarItem 
+            href="/secure" 
+            icon={<Shield />} 
+            label="Protect PDF" 
+            isActive={location === "/secure"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/unlock-pdf" 
+            icon={<Lock />} 
+            label="Unlock PDF" 
+            isActive={location === "/unlock-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/sign-pdf" 
+            icon={<FileSignature />} 
+            label="Sign PDF" 
+            isActive={location === "/sign-pdf"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/redact-pdf" 
+            icon={<FileX />} 
+            label="Redact PDF" 
+            isActive={location === "/redact-pdf"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
         
-        <div className="mt-6 mb-3 px-4">
-          <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-gradient-to-r from-amber-400 to-red-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-gradient-to-r from-amber-400 to-red-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-gradient-to-r from-amber-400 to-red-400 rounded-full"></div>
-          </div>
-          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-red-600 uppercase tracking-wider">Convert From PDF</h3>
-        </div>
-        
-        <SidebarItem 
-          href="/pdf-to-word" 
-          icon={<FileText />} 
-          label="PDF to Word" 
-          isActive={location === "/pdf-to-word"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/pdf-to-excel" 
-          icon={<PanelLeft />} 
-          label="PDF to Excel" 
-          isActive={location === "/pdf-to-excel"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/pdf-to-html" 
-          icon={<FileType />} 
-          label="PDF to HTML" 
-          isActive={location === "/pdf-to-html"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/pdf-to-jpg" 
-          icon={<Image />} 
-          label="PDF to JPG" 
-          isActive={location === "/pdf-to-jpg"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/pdf-to-text" 
-          icon={<FileText />} 
-          label="PDF to Text" 
-          isActive={location === "/pdf-to-text"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/pdf-to-json" 
-          icon={<FileJson />} 
-          label="PDF to JSON" 
-          isActive={location === "/pdf-to-json"} 
-          onClick={handleItemClick}
-        />
-        
-        <div className="mt-6 mb-3 px-4">
-          <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-gradient-to-r from-green-400 to-cyan-400 rounded-full"></div>
-          </div>
-          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-cyan-600 uppercase tracking-wider">Convert To PDF</h3>
-        </div>
-        
-        <SidebarItem 
-          href="/word-to-pdf" 
-          icon={<FileText />} 
-          label="Word to PDF" 
-          isActive={location === "/word-to-pdf"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/excel-to-pdf" 
-          icon={<PanelLeft />} 
-          label="Excel to PDF" 
-          isActive={location === "/excel-to-pdf"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/jpg-to-pdf" 
-          icon={<Image />} 
-          label="JPG to PDF" 
-          isActive={location === "/jpg-to-pdf"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/html-to-pdf" 
-          icon={<FileType />} 
-          label="HTML to PDF" 
-          isActive={location === "/html-to-pdf"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/text-to-pdf" 
-          icon={<FileText />} 
-          label="Text to PDF" 
-          isActive={location === "/text-to-pdf"} 
-          onClick={handleItemClick}
-        />
-        
-        <div className="mt-6 mb-3 px-4">
-          <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
-          </div>
-          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 uppercase tracking-wider">Information</h3>
-        </div>
-        
-        <SidebarItem 
-          href="/contact" 
-          icon={<Mail />} 
-          label="Contact Us" 
-          isActive={location === "/contact"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
-          href="/help" 
-          icon={<HelpCircle />} 
-          label="Help & FAQ" 
-          isActive={location === "/help"} 
-          onClick={handleItemClick}
-        />
+        {/* INFORMATION SECTION */}
+        <SidebarCategory 
+          title="Information" 
+          gradient="blue-purple" 
+          defaultOpen={false}
+        >
+          <SidebarItem 
+            href="/contact" 
+            icon={<Mail />} 
+            label="Contact Us" 
+            isActive={location === "/contact"} 
+            onClick={handleItemClick}
+          />
+          
+          <SidebarItem 
+            href="/help" 
+            icon={<HelpCircle />} 
+            label="Help & FAQ" 
+            isActive={location === "/help"} 
+            onClick={handleItemClick}
+          />
+        </SidebarCategory>
       </nav>
       
       {/* App Info */}

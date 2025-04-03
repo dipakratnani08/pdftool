@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Edit, 
   HelpCircle, 
@@ -24,7 +24,8 @@ import {
   PlusCircle,
   MinusCircle,
   PanelLeft,
-  RotateCw
+  RotateCw,
+  AlertCircle
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import PDFDropzone from '@/components/PDFDropzone';
@@ -39,6 +40,7 @@ import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Toggle } from "@/components/ui/toggle";
+import { getFileBlob, generatePdfPreview } from '@/lib/pdf';
 
 const EditPDF: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
@@ -52,6 +54,10 @@ const EditPDF: React.FC = () => {
   const [zoomLevel, setZoomLevel] = useState(100);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTool, setActiveTool] = useState("select");
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   
   const { toast } = useToast();
   
@@ -60,6 +66,41 @@ const EditPDF: React.FC = () => {
     queryKey: ['/api/files'],
     staleTime: 30000, // 30 seconds
   });
+  
+  // Generate PDF preview when selected file or page changes
+  useEffect(() => {
+    // Reset preview state when a file is deselected
+    if (!selectedFile) {
+      setPdfPreview(null);
+      setPdfFile(null);
+      setPreviewError(null);
+      return;
+    }
+    
+    const loadPdfPreview = async () => {
+      try {
+        setIsLoadingPreview(true);
+        setPreviewError(null);
+        
+        // Get the PDF file from the server
+        const blob = await getFileBlob(selectedFile.id);
+        const file = new File([blob], selectedFile.fileName, { type: 'application/pdf' });
+        setPdfFile(file);
+        
+        // Generate preview for the current page
+        const dataUrl = await generatePdfPreview(file, currentPage);
+        setPdfPreview(dataUrl);
+      } catch (error) {
+        console.error('Error generating PDF preview:', error);
+        setPreviewError(error instanceof Error ? error.message : 'Failed to generate PDF preview');
+        setPdfPreview(null);
+      } finally {
+        setIsLoadingPreview(false);
+      }
+    };
+    
+    loadPdfPreview();
+  }, [selectedFile, currentPage]);
   
   // Handle file upload
   const handleUploadComplete = (uploadedFiles: FileItem[]) => {

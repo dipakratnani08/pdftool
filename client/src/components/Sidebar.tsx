@@ -3,6 +3,7 @@ import { FileText, FilePlus2, FileOutput, FileSearch, Edit, Lock, LayoutDashboar
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { User } from "@shared/schema";
 
 interface SidebarProps {
   mobile?: boolean;
@@ -20,8 +21,8 @@ interface SidebarItemProps {
 const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, onClick }) => {
   return (
     <Link href={href}>
-      <a
-        className={`flex items-center px-4 py-2 text-sm font-medium rounded-md group ${
+      <div
+        className={`flex items-center px-4 py-2 text-sm font-medium rounded-md group cursor-pointer ${
           isActive
             ? "text-primary-500 bg-primary-50"
             : "text-gray-700 hover:bg-gray-100"
@@ -32,7 +33,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, 
           {icon}
         </span>
         {label}
-      </a>
+      </div>
     </Link>
   );
 };
@@ -40,7 +41,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, 
 const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
   const [location] = useLocation();
   
-  const { data: user } = useQuery({
+  // We need to define the correct type based on what the API returns
+  interface UserResponse {
+    id: number;
+    username: string;
+    displayName: string | null;
+    imageUrl: string | null;
+    planType: string;
+  }
+  
+  const { data: user } = useQuery<UserResponse>({
     queryKey: ["/api/user/current"],
     staleTime: Infinity
   });
@@ -149,8 +159,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       {/* User Profile */}
       <div className="flex items-center px-4 py-4 border-t border-gray-200">
         <Avatar className="h-8 w-8">
-          <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" />
-          <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+          {user?.imageUrl ? (
+            <AvatarImage src={user.imageUrl} />
+          ) : (
+            <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+          )}
         </Avatar>
         <div className="ml-3">
           <p className="text-sm font-medium text-gray-700">{user?.displayName || 'User'}</p>

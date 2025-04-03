@@ -48,7 +48,8 @@ export class MemStorage implements IStorage {
     this.createUser({
       username: "demo@example.com",
       password: "password123",
-      displayName: "Alex Morgan"
+      displayName: "Alex Morgan",
+      imageUrl: "https://ui-avatars.com/api/?name=Alex+Morgan&background=random"
     });
   }
 

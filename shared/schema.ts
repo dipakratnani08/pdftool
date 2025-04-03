@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   displayName: text("display_name"),
+  imageUrl: text("image_url"),
   planType: text("plan_type").default("free"),
 });
 
@@ -15,6 +16,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   displayName: true,
+  imageUrl: true,
 });
 
 // PDF File model

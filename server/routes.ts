@@ -54,7 +54,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (user) {
       // Don't send password in response
       const { password, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
+      
+      // Ensure imageUrl has a valid value or use default avatar generator
+      const responseUser = {
+        ...userWithoutPassword,
+        imageUrl: user.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=random`
+      };
+      
+      res.json(responseUser);
     } else {
       res.status(404).json({ message: "User not found" });
     }

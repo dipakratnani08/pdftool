@@ -16,7 +16,7 @@ const EditPDF: React.FC = () => {
   const { toast } = useToast();
   
   // Fetch all available PDFs
-  const { data: allFiles, isLoading } = useQuery({
+  const { data: allFiles = [], isLoading } = useQuery<FileItem[]>({
     queryKey: ['/api/files'],
     staleTime: 30000, // 30 seconds
   });
@@ -180,12 +180,75 @@ const EditPDF: React.FC = () => {
                       </TabsContent>
                     </Tabs>
                     
-                    <div className="border border-gray-200 rounded-md h-96 flex items-center justify-center bg-gray-50">
-                      <div className="text-center">
-                        <Edit className="h-12 w-12 text-gray-300 mx-auto" />
-                        <p className="mt-2 text-sm text-gray-500">PDF Editor Preview</p>
-                        <p className="text-xs text-gray-400">PDF preview and editing coming soon</p>
-                      </div>
+                    <div className="border border-gray-200 rounded-md h-96 bg-white overflow-hidden shadow">
+                      {selectedFile ? (
+                        <div className="relative w-full h-full">
+                          <div className="absolute inset-0 bg-white flex flex-col">
+                            <div className="bg-gray-100 p-2 border-b text-xs font-medium text-gray-700 flex items-center justify-between">
+                              <span>PDF Preview: {selectedFile.fileName}</span>
+                              <span>{selectedFile.pageCount} pages</span>
+                            </div>
+                            <div className="flex-1 flex items-center justify-center bg-gray-50 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-grid-gray-100 opacity-50"></div>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="bg-white shadow-lg rounded-sm h-3/4 w-3/5 relative border border-gray-300 flex flex-col overflow-hidden">
+                                  <div className="flex-1 p-6 flex items-center justify-center">
+                                    {activeTab === 'text' && (
+                                      <div className="w-full">
+                                        <div className="w-full h-3 bg-gray-200 rounded mb-4"></div>
+                                        <div className="w-3/4 h-3 bg-gray-200 rounded mb-6"></div>
+                                        <div className="w-full h-2 bg-gray-200 rounded mb-2"></div>
+                                        <div className="w-full h-2 bg-gray-200 rounded mb-2"></div>
+                                        <div className="w-5/6 h-2 bg-gray-200 rounded mb-4"></div>
+                                        <div className="w-full h-2 bg-gray-200 rounded mb-2"></div>
+                                        <div className="w-full h-2 bg-gray-200 rounded mb-2"></div>
+                                        <div className="w-3/4 h-2 bg-gray-200 rounded"></div>
+                                      </div>
+                                    )}
+                                    {activeTab === 'images' && (
+                                      <div className="flex flex-col items-center">
+                                        <div className="w-32 h-32 bg-gray-200 rounded-md mb-4 flex items-center justify-center">
+                                          <Image className="h-12 w-12 text-gray-400" />
+                                        </div>
+                                        <div className="w-full h-2 bg-gray-200 rounded mb-2"></div>
+                                        <div className="w-3/4 h-2 bg-gray-200 rounded"></div>
+                                      </div>
+                                    )}
+                                    {activeTab === 'annotate' && (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <svg width="200" height="100" viewBox="0 0 200 100" className="text-primary-500">
+                                          <path
+                                            d="M10,90 Q50,10 90,90 T170,90"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                          />
+                                        </svg>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-md rounded-md px-3 py-1.5 text-xs font-medium flex items-center space-x-4">
+                                <button className="flex items-center space-x-1 text-gray-600 hover:text-primary-500">
+                                  <span>Zoom</span>
+                                </button>
+                                <button className="flex items-center space-x-1 text-gray-600 hover:text-primary-500">
+                                  <span>Page 1 of {selectedFile.pageCount}</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center">
+                            <Edit className="h-12 w-12 text-gray-300 mx-auto" />
+                            <p className="mt-2 text-sm text-gray-500">PDF Editor Preview</p>
+                            <p className="text-xs text-gray-400">Select a PDF to preview and edit</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </>

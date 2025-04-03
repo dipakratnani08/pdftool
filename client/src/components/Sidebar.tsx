@@ -29,14 +29,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, 
         className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group cursor-pointer transition-all duration-200 ${
           isActive
             ? "text-white bg-primary-500 shadow-md"
-            : "text-gray-700 hover:bg-gray-100 hover:translate-x-1"
+            : "text-gray-700 hover:bg-gray-100"
         }`}
         onClick={onClick}
       >
-        <span className={`mr-3 h-5 w-5 ${isActive ? "text-white" : "text-primary-400"}`}>
+        <div className={`mr-3 flex-shrink-0 h-5 w-5 transition-transform group-hover:scale-110 ${isActive ? "text-white" : "text-primary-400"}`}>
           {icon}
-        </span>
-        {label}
+        </div>
+        <span className="transition-all duration-200 group-hover:translate-x-0.5">{label}</span>
       </div>
     </Link>
   );

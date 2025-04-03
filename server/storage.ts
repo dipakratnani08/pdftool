@@ -66,7 +66,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id, planType: "free" };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      planType: "free",
+      displayName: insertUser.displayName ?? null,
+      imageUrl: insertUser.imageUrl ?? null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -88,10 +94,14 @@ export class MemStorage implements IStorage {
     const storageLocation = file.storageLocation || `uploads/${randomUUID()}.pdf`;
 
     const pdfFile: PdfFile = { 
-      ...file, 
-      id, 
-      createdAt: timestamp,
-      storageLocation 
+      id,
+      userId: file.userId ?? null,
+      fileName: file.fileName,
+      originalSize: file.originalSize,
+      processedSize: file.processedSize ?? null,
+      pageCount: file.pageCount ?? null,
+      storageLocation: storageLocation,
+      createdAt: timestamp 
     };
     
     this.pdfFiles.set(id, pdfFile);
@@ -117,8 +127,14 @@ export class MemStorage implements IStorage {
     const timestamp = new Date();
     
     const pdfOperation: PdfOperation = {
-      ...operation,
       id,
+      userId: operation.userId ?? null,
+      operationType: operation.operationType,
+      sourceFileIds: operation.sourceFileIds,
+      resultFileId: operation.resultFileId ?? null,
+      options: operation.options ?? null,
+      status: operation.status,
+      message: operation.message ?? null,
       createdAt: timestamp
     };
     
@@ -143,7 +159,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.pdfOperations.values())
       .filter(op => op.userId === userId)
       .sort((a, b) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        // Safely handle date comparison with possible null values
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
       })
       .slice(0, limit);
   }

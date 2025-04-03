@@ -95,11 +95,11 @@ const PDFDropzone: React.FC<PDFDropzoneProps> = ({
       
       // Call the callback with the uploaded files info
       onUploadComplete(result.files);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Upload error:', error);
       toast({
         title: "Upload failed",
-        description: error.message || "There was an error uploading your files",
+        description: error instanceof Error ? error.message : "There was an error uploading your files",
         variant: "destructive"
       });
     } finally {

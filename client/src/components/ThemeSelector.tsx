@@ -39,7 +39,7 @@ const COLOR_PRESETS = [
 const ThemeSelector: React.FC = () => {
   const { toast } = useToast();
   
-  // Fetch current theme from localStorage or use default
+  // Fetch current theme from localStorage or use default from theme.json
   const [currentTheme, setCurrentTheme] = useState<ThemeOptions>(() => {
     // Try to load from localStorage first
     const savedTheme = localStorage.getItem('pdfcore-theme');
@@ -51,7 +51,7 @@ const ThemeSelector: React.FC = () => {
       }
     }
     
-    // Default theme
+    // Default theme from theme.json
     return {
       variant: 'professional',
       primary: 'hsl(210, 90%, 40%)',
@@ -68,19 +68,28 @@ const ThemeSelector: React.FC = () => {
     // Apply appearance (light/dark mode)
     if (currentTheme.appearance === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
     
-    // You could also handle the variant and radius here
-    // This example just updates the document root with CSS variables
+    // Apply radius
     document.documentElement.style.setProperty('--theme-radius', `${currentTheme.radius}rem`);
+    document.documentElement.style.setProperty('--radius', `${currentTheme.radius}rem`);
     
-    // Apply theme variant
+    // Apply theme variant - make sure we remove other variants first
+    document.documentElement.classList.remove('professional', 'tint', 'vibrant');
+    document.documentElement.classList.add(currentTheme.variant);
     document.documentElement.setAttribute('data-theme-variant', currentTheme.variant);
+    
+    // Set theme variant as CSS variable as well for components that use it
+    document.documentElement.style.setProperty('--theme-variant', currentTheme.variant);
     
     // Save to localStorage for persistence
     localStorage.setItem('pdfcore-theme', JSON.stringify(currentTheme));
+    
+    console.log('Theme applied:', currentTheme);
   }, [currentTheme]);
   
   // Function to update theme

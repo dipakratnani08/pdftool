@@ -13,6 +13,7 @@ import ConvertPDF from "@/pages/ConvertPDF";
 import EditPDF from "@/pages/EditPDF";
 import SecurePDF from "@/pages/SecurePDF";
 import Contact from "@/pages/Contact";
+import { useEffect } from "react";
 
 function Router() {
   return (
@@ -34,6 +35,42 @@ function Router() {
 }
 
 function App() {
+  // Initialize theme from theme.json on startup
+  useEffect(() => {
+    const applyThemeFromJson = () => {
+      // Default theme matching theme.json values
+      const defaultTheme = {
+        variant: 'professional',
+        primary: 'hsl(210, 90%, 40%)',
+        appearance: 'light',
+        radius: 0.75
+      };
+      
+      // Apply the theme settings
+      document.documentElement.style.setProperty('--theme-primary', defaultTheme.primary);
+      
+      if (defaultTheme.appearance === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
+      
+      document.documentElement.style.setProperty('--theme-radius', `${defaultTheme.radius}rem`);
+      document.documentElement.style.setProperty('--radius', `${defaultTheme.radius}rem`);
+      
+      document.documentElement.classList.remove('professional', 'tint', 'vibrant');
+      document.documentElement.classList.add(defaultTheme.variant);
+      document.documentElement.setAttribute('data-theme-variant', defaultTheme.variant);
+      document.documentElement.style.setProperty('--theme-variant', defaultTheme.variant);
+      
+      console.log('Initial theme applied from theme.json:', defaultTheme);
+    };
+    
+    applyThemeFromJson();
+  }, []);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <Router />

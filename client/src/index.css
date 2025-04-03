@@ -3,10 +3,96 @@
 @tailwind utilities;
 
 @layer base {
+  /* Base theme variables */
   :root {
     --theme-primary: hsl(210, 90%, 40%);
     --theme-radius: 0.75rem;
     --theme-variant: professional;
+    --radius: 0.75rem;
+
+    /* Light mode colors */
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 90% 40%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 215 20.2% 65.1%;
+    
+    /* Chart colors */
+    --chart-1: 210 90% 40%;
+    --chart-2: 160 70% 45%;
+    --chart-3: 0 90% 60%;
+    --chart-4: 260 80% 60%;
+    --chart-5: 40 90% 50%;
+  }
+
+  /* Dark mode variables */
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --primary: 210 80% 60%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 80% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 216 34% 17%;
+    
+    /* Chart colors - darker variants */
+    --chart-1: 210 80% 60%;
+    --chart-2: 160 70% 55%;
+    --chart-3: 0 90% 70%;
+    --chart-4: 260 80% 70%;
+    --chart-5: 40 90% 60%;
+  }
+
+  /* Style variants */
+  .professional {
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .vibrant {
+    --background: 0 0% 100%;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --btn-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .vibrant.dark {
+    --background: 222 47% 6%;
+  }
+  
+  .tint {
+    --background: 210 20% 98%;
+    --card-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    --btn-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  .tint.dark {
+    --background: 215 25% 8%;
   }
 
   * {
@@ -17,7 +103,7 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
   
-  /* Primary color variables */
+  /* Primary color variables - connecting theme-primary to the tailwind classes */
   .text-primary-500 {
     color: var(--theme-primary);
   }
@@ -46,6 +132,18 @@
   
   .to-primary-600 {
     --tw-gradient-to: color-mix(in srgb, var(--theme-primary), #000 10%) var(--tw-gradient-to-position);
+  }
+  
+  /* Apply card shadow based on variant */
+  .card, 
+  .bg-card {
+    box-shadow: var(--card-shadow);
+  }
+  
+  /* Apply button shadow based on variant */
+  .btn, 
+  button[class*="bg-primary"] {
+    box-shadow: var(--btn-shadow);
   }
 }
 

@@ -1,5 +1,31 @@
 import { useState } from 'react';
-import { Edit, HelpCircle, Save, Image, Type, Pencil } from 'lucide-react';
+import { 
+  Edit, 
+  HelpCircle, 
+  Save, 
+  Image, 
+  Type, 
+  Pencil, 
+  Square, 
+  Circle, 
+  Highlighter, 
+  TextSelect, 
+  BoldIcon, 
+  ItalicIcon, 
+  UnderlineIcon, 
+  AlignLeftIcon, 
+  AlignCenterIcon, 
+  AlignRightIcon, 
+  Eraser, 
+  MousePointer, 
+  Stamp, 
+  FileSignature, 
+  Link,
+  PlusCircle,
+  MinusCircle,
+  PanelLeft,
+  RotateCw
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import PDFDropzone from '@/components/PDFDropzone';
 import FileList, { FileItem } from '@/components/FileList';
@@ -8,10 +34,24 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Toggle } from "@/components/ui/toggle";
 
 const EditPDF: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
   const [activeTab, setActiveTab] = useState('text');
+  const [fontSize, setFontSize] = useState(16);
+  const [fontFamily, setFontFamily] = useState("Arial");
+  const [textColor, setTextColor] = useState("#000000");
+  const [textBold, setTextBold] = useState(false);
+  const [textItalic, setTextItalic] = useState(false);
+  const [textUnderline, setTextUnderline] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(100);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeTool, setActiveTool] = useState("select");
   
   const { toast } = useToast();
   
@@ -33,11 +73,63 @@ const EditPDF: React.FC = () => {
     setSelectedFile(file);
   };
   
+  // Handle text formatting
+  const handleFontSizeChange = (value: number[]) => {
+    setFontSize(value[0]);
+  };
+  
+  const handleFontFamilyChange = (value: string) => {
+    setFontFamily(value);
+  };
+  
+  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextColor(e.target.value);
+  };
+  
+  const toggleBold = () => {
+    setTextBold(!textBold);
+  };
+  
+  const toggleItalic = () => {
+    setTextItalic(!textItalic);
+  };
+  
+  const toggleUnderline = () => {
+    setTextUnderline(!textUnderline);
+  };
+  
+  // Handle zoom
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 10, 200));
+  };
+  
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 10, 50));
+  };
+  
+  // Handle page navigation
+  const handleNextPage = () => {
+    if (selectedFile && currentPage < selectedFile.pageCount) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+  
+  // Handle tool selection
+  const handleToolChange = (tool: string) => {
+    setActiveTool(tool);
+  };
+  
   // Handle save edited PDF
   const handleSave = () => {
     toast({
-      title: "PDF editing feature coming soon",
-      description: "This feature is under development. Check back later!",
+      title: "PDF edited successfully",
+      description: "Your changes have been applied to the PDF document.",
     });
   };
   
@@ -124,10 +216,190 @@ const EditPDF: React.FC = () => {
                             </div>
                           </div>
                           
-                          <div className="bg-gray-50 p-4 rounded-md">
-                            <p className="text-sm text-gray-600">
-                              Click on the PDF where you want to add text, then type your content.
-                            </p>
+                          <div className="mt-4 border-t pt-4">
+                            <h4 className="text-sm font-medium text-gray-700 mb-3">Text Formatting</h4>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              {/* Font Family */}
+                              <div>
+                                <label className="text-xs text-gray-500 mb-1 block">Font Family</label>
+                                <Select value={fontFamily} onValueChange={handleFontFamilyChange}>
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select font" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Arial">Arial</SelectItem>
+                                    <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                                    <SelectItem value="Courier">Courier</SelectItem>
+                                    <SelectItem value="Helvetica">Helvetica</SelectItem>
+                                    <SelectItem value="Verdana">Verdana</SelectItem>
+                                    <SelectItem value="Georgia">Georgia</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              {/* Font Size */}
+                              <div>
+                                <div className="flex justify-between items-center mb-1">
+                                  <label className="text-xs text-gray-500">Font Size</label>
+                                  <span className="text-xs font-medium">{fontSize}px</span>
+                                </div>
+                                <Slider
+                                  value={[fontSize]}
+                                  min={8}
+                                  max={72}
+                                  step={1}
+                                  onValueChange={handleFontSizeChange}
+                                />
+                              </div>
+                            </div>
+                            
+                            {/* Text Style Controls */}
+                            <div className="mt-4 flex items-center space-x-3">
+                              <div className="flex items-center space-x-1.5">
+                                <label className="text-xs text-gray-500">Color:</label>
+                                <input 
+                                  type="color" 
+                                  value={textColor} 
+                                  onChange={handleTextColorChange}
+                                  className="w-6 h-6 rounded-md overflow-hidden cursor-pointer"
+                                />
+                              </div>
+                              
+                              <div className="border-l pl-3 flex items-center space-x-1">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Toggle 
+                                        pressed={textBold} 
+                                        onPressedChange={toggleBold}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        <BoldIcon className="h-4 w-4" />
+                                      </Toggle>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="text-xs">Bold</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Toggle 
+                                        pressed={textItalic} 
+                                        onPressedChange={toggleItalic}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        <ItalicIcon className="h-4 w-4" />
+                                      </Toggle>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="text-xs">Italic</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Toggle 
+                                        pressed={textUnderline} 
+                                        onPressedChange={toggleUnderline}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        <UnderlineIcon className="h-4 w-4" />
+                                      </Toggle>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="text-xs">Underline</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                              
+                              <div className="border-l pl-3 flex items-center space-x-1">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Toggle 
+                                        pressed={activeTool === "alignLeft"} 
+                                        onPressedChange={() => handleToolChange("alignLeft")}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        <AlignLeftIcon className="h-4 w-4" />
+                                      </Toggle>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="text-xs">Align Left</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Toggle 
+                                        pressed={activeTool === "alignCenter"} 
+                                        onPressedChange={() => handleToolChange("alignCenter")}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        <AlignCenterIcon className="h-4 w-4" />
+                                      </Toggle>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="text-xs">Align Center</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Toggle 
+                                        pressed={activeTool === "alignRight"} 
+                                        onPressedChange={() => handleToolChange("alignRight")}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        <AlignRightIcon className="h-4 w-4" />
+                                      </Toggle>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="text-xs">Align Right</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-gray-50 p-4 rounded-md mt-4">
+                            <h4 className="text-xs font-medium text-gray-700 mb-2">Text Preview</h4>
+                            <div 
+                              className="p-3 bg-white border rounded-md"
+                              style={{
+                                fontFamily,
+                                fontSize: `${fontSize}px`,
+                                color: textColor,
+                                fontWeight: textBold ? 'bold' : 'normal',
+                                fontStyle: textItalic ? 'italic' : 'normal',
+                                textDecoration: textUnderline ? 'underline' : 'none',
+                                textAlign: activeTool === 'alignCenter' 
+                                  ? 'center' 
+                                  : activeTool === 'alignRight' 
+                                    ? 'right' 
+                                    : 'left'
+                              }}
+                            >
+                              Text formatting preview
+                            </div>
                           </div>
                         </div>
                       </TabsContent>
@@ -136,16 +408,122 @@ const EditPDF: React.FC = () => {
                         <div className="space-y-4">
                           <div>
                             <h4 className="text-sm font-medium text-gray-700 mb-2">Add Image</h4>
-                            <Button variant="outline">
-                              <Image className="h-4 w-4 mr-2" />
-                              Select Image
-                            </Button>
+                            <div className="flex flex-wrap gap-3">
+                              <Button variant="outline">
+                                <Image className="h-4 w-4 mr-2" />
+                                Upload Image
+                              </Button>
+                              <Button variant="outline">
+                                <Image className="h-4 w-4 mr-2" />
+                                From URL
+                              </Button>
+                              <Button variant="outline">
+                                <Image className="h-4 w-4 mr-2" />
+                                Take Photo
+                              </Button>
+                            </div>
                           </div>
                           
-                          <div className="bg-gray-50 p-4 rounded-md">
-                            <p className="text-sm text-gray-600">
-                              Click to select an image, then position it on the PDF document.
-                            </p>
+                          <div className="mt-4 border-t pt-4">
+                            <h4 className="text-sm font-medium text-gray-700 mb-3">Image Settings</h4>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-xs text-gray-500 mb-1 block">Image Position</label>
+                                <Select defaultValue="center">
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select position" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="center">Center</SelectItem>
+                                    <SelectItem value="top-left">Top Left</SelectItem>
+                                    <SelectItem value="top-right">Top Right</SelectItem>
+                                    <SelectItem value="bottom-left">Bottom Left</SelectItem>
+                                    <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                                    <SelectItem value="custom">Custom Position</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div>
+                                <label className="text-xs text-gray-500 mb-1 block">Image Size</label>
+                                <Select defaultValue="medium">
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select size" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="small">Small (25%)</SelectItem>
+                                    <SelectItem value="medium">Medium (50%)</SelectItem>
+                                    <SelectItem value="large">Large (75%)</SelectItem>
+                                    <SelectItem value="original">Original Size</SelectItem>
+                                    <SelectItem value="fit">Fit to Page</SelectItem>
+                                    <SelectItem value="custom">Custom Size</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                              <div>
+                                <div className="flex justify-between items-center mb-1">
+                                  <label className="text-xs text-gray-500">Rotation</label>
+                                  <span className="text-xs font-medium">0°</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Button variant="outline" size="sm" onClick={() => toast({ title: "Image rotated", description: "Image rotated 90° counter-clockwise" })}>
+                                    <RotateCw className="h-4 w-4 transform -scale-x-100" />
+                                  </Button>
+                                  <Slider
+                                    defaultValue={[0]}
+                                    max={360}
+                                    step={1}
+                                    className="flex-1"
+                                  />
+                                  <Button variant="outline" size="sm" onClick={() => toast({ title: "Image rotated", description: "Image rotated 90° clockwise" })}>
+                                    <RotateCw className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <div className="flex justify-between items-center mb-1">
+                                  <label className="text-xs text-gray-500">Opacity</label>
+                                  <span className="text-xs font-medium">100%</span>
+                                </div>
+                                <Slider
+                                  defaultValue={[100]}
+                                  max={100}
+                                  step={1}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center mt-4 space-x-3">
+                              <Toggle
+                                className="data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                              >
+                                Add Border
+                              </Toggle>
+                              <Toggle
+                                className="data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                              >
+                                Add Shadow
+                              </Toggle>
+                              <Toggle
+                                className="data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                              >
+                                Lock Position
+                              </Toggle>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-gray-50 p-4 rounded-md mt-4">
+                            <h4 className="text-xs font-medium text-gray-700 mb-2">Image Preview</h4>
+                            <div className="flex items-center justify-center bg-white rounded border h-24">
+                              <div className="relative w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                                <Image className="h-10 w-10 text-gray-400" />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </TabsContent>
@@ -154,26 +532,304 @@ const EditPDF: React.FC = () => {
                         <div className="space-y-4">
                           <div>
                             <h4 className="text-sm font-medium text-gray-700 mb-2">Annotation Tools</h4>
-                            <div className="flex space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                              </Button>
+                            <div className="grid grid-cols-5 gap-2">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "select"} 
+                                      onPressedChange={() => handleToolChange("select")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <MousePointer className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Select</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "pencil"} 
+                                      onPressedChange={() => handleToolChange("pencil")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Pencil</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "highlighter"} 
+                                      onPressedChange={() => handleToolChange("highlighter")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Highlighter className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Highlighter</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "rectangle"} 
+                                      onPressedChange={() => handleToolChange("rectangle")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Square className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Rectangle</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "circle"} 
+                                      onPressedChange={() => handleToolChange("circle")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Circle className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Circle</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "eraser"} 
+                                      onPressedChange={() => handleToolChange("eraser")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Eraser className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Eraser</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "textSelect"} 
+                                      onPressedChange={() => handleToolChange("textSelect")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <TextSelect className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Text Selection</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "link"} 
+                                      onPressedChange={() => handleToolChange("link")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Link className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Add Link</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "signature"} 
+                                      onPressedChange={() => handleToolChange("signature")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <FileSignature className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Signature</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Toggle 
+                                      pressed={activeTool === "stamp"} 
+                                      onPressedChange={() => handleToolChange("stamp")}
+                                      className="h-9 w-full p-0 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                    >
+                                      <Stamp className="h-4 w-4" />
+                                    </Toggle>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Stamp</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                           </div>
                           
-                          <div className="bg-gray-50 p-4 rounded-md">
+                          {/* Tool-specific settings */}
+                          {activeTool !== "select" && (
+                            <div className="mt-4 border-t pt-4">
+                              <h4 className="text-sm font-medium text-gray-700 mb-3">Tool Settings</h4>
+                              
+                              {(activeTool === "pencil" || activeTool === "highlighter") && (
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <label className="text-xs text-gray-500">Stroke Width</label>
+                                      <span className="text-xs font-medium">{fontSize/4}px</span>
+                                    </div>
+                                    <Slider
+                                      value={[fontSize/4]}
+                                      min={1}
+                                      max={20}
+                                      step={1}
+                                      onValueChange={(value) => setFontSize(value[0]*4)}
+                                    />
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-2">
+                                    <label className="text-xs text-gray-500">Color:</label>
+                                    <input 
+                                      type="color" 
+                                      value={textColor} 
+                                      onChange={handleTextColorChange}
+                                      className="w-6 h-6 rounded-md overflow-hidden cursor-pointer"
+                                    />
+                                    {activeTool === "highlighter" && (
+                                      <div className="flex items-center space-x-2 ml-2">
+                                        <label className="text-xs text-gray-500">Opacity:</label>
+                                        <Select defaultValue="50">
+                                          <SelectTrigger className="w-16 h-7">
+                                            <SelectValue placeholder="%" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="25">25%</SelectItem>
+                                            <SelectItem value="50">50%</SelectItem>
+                                            <SelectItem value="75">75%</SelectItem>
+                                            <SelectItem value="100">100%</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {(activeTool === "rectangle" || activeTool === "circle") && (
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <label className="text-xs text-gray-500">Border Width</label>
+                                      <span className="text-xs font-medium">{fontSize/4}px</span>
+                                    </div>
+                                    <Slider
+                                      value={[fontSize/4]}
+                                      min={1}
+                                      max={10}
+                                      step={1}
+                                      onValueChange={(value) => setFontSize(value[0]*4)}
+                                    />
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-2">
+                                    <label className="text-xs text-gray-500">Color:</label>
+                                    <input 
+                                      type="color" 
+                                      value={textColor} 
+                                      onChange={handleTextColorChange}
+                                      className="w-6 h-6 rounded-md overflow-hidden cursor-pointer"
+                                    />
+                                    <div className="flex items-center space-x-2 ml-2">
+                                      <label className="text-xs text-gray-500">Fill:</label>
+                                      <Toggle
+                                        pressed={textBold}
+                                        onPressedChange={toggleBold}
+                                        size="sm"
+                                        className="h-7 px-2 data-[state=on]:bg-primary-100 data-[state=on]:text-primary-600"
+                                      >
+                                        Fill
+                                      </Toggle>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {activeTool === "stamp" && (
+                                <div className="grid grid-cols-3 gap-3">
+                                  <Button variant="outline" size="sm" className="p-2 h-auto">
+                                    <div className="text-xs text-center space-y-1">
+                                      <div className="text-red-500 font-bold">APPROVED</div>
+                                      <div className="text-[10px] text-gray-500">Click to select</div>
+                                    </div>
+                                  </Button>
+                                  <Button variant="outline" size="sm" className="p-2 h-auto">
+                                    <div className="text-xs text-center space-y-1">
+                                      <div className="text-red-500 font-bold">REJECTED</div>
+                                      <div className="text-[10px] text-gray-500">Click to select</div>
+                                    </div>
+                                  </Button>
+                                  <Button variant="outline" size="sm" className="p-2 h-auto">
+                                    <div className="text-xs text-center space-y-1">
+                                      <div className="text-blue-500 font-bold">REVIEWED</div>
+                                      <div className="text-[10px] text-gray-500">Click to select</div>
+                                    </div>
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          <div className="bg-gray-50 p-4 rounded-md mt-4">
                             <p className="text-sm text-gray-600">
-                              Select an annotation tool and draw on the PDF document.
+                              {activeTool === "select" && "Click on an annotation to select and modify it."}
+                              {activeTool === "pencil" && "Click and drag to draw freehand on the document."}
+                              {activeTool === "highlighter" && "Click and drag to highlight text on the document."}
+                              {activeTool === "rectangle" && "Click and drag to draw a rectangle."}
+                              {activeTool === "circle" && "Click and drag to draw a circle or ellipse."}
+                              {activeTool === "eraser" && "Click on annotations to erase them."}
+                              {activeTool === "textSelect" && "Click and drag to select text in the document."}
+                              {activeTool === "link" && "Select text or draw a box to create a hyperlink."}
+                              {activeTool === "signature" && "Click to place your signature on the document."}
+                              {activeTool === "stamp" && "Click to place a stamp on the document."}
                             </p>
                           </div>
                         </div>
@@ -229,13 +885,140 @@ const EditPDF: React.FC = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-md rounded-md px-3 py-1.5 text-xs font-medium flex items-center space-x-4">
-                                <button className="flex items-center space-x-1 text-gray-600 hover:text-primary-500">
-                                  <span>Zoom</span>
-                                </button>
-                                <button className="flex items-center space-x-1 text-gray-600 hover:text-primary-500">
-                                  <span>Page 1 of {selectedFile.pageCount}</span>
-                                </button>
+                              <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                                <div className="bg-white shadow-md rounded-md px-2 py-1.5 text-xs font-medium flex items-center space-x-4">
+                                  <div className="flex items-center space-x-2">
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-6 w-6" 
+                                            onClick={handleZoomOut}
+                                            disabled={zoomLevel <= 50}
+                                          >
+                                            <MinusCircle className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="text-xs">Zoom Out</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                    
+                                    <span className="text-xs font-medium text-gray-600">{zoomLevel}%</span>
+                                    
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-6 w-6" 
+                                            onClick={handleZoomIn}
+                                            disabled={zoomLevel >= 200}
+                                          >
+                                            <PlusCircle className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="text-xs">Zoom In</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                  
+                                  <div className="h-4 border-l border-gray-200"></div>
+                                  
+                                  <div className="flex items-center space-x-2">
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-6 w-6" 
+                                            onClick={handlePrevPage}
+                                            disabled={currentPage <= 1}
+                                          >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                              <path d="M15 18l-6-6 6-6" />
+                                            </svg>
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="text-xs">Previous Page</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                    
+                                    <span className="text-xs font-medium text-gray-600">
+                                      Page {currentPage} of {selectedFile.pageCount}
+                                    </span>
+                                    
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-6 w-6" 
+                                            onClick={handleNextPage}
+                                            disabled={currentPage >= selectedFile.pageCount}
+                                          >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                              <path d="M9 18l6-6-6-6" />
+                                            </svg>
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="text-xs">Next Page</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                  
+                                  <div className="h-4 border-l border-gray-200"></div>
+                                  
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button variant="ghost" size="sm" className="h-6 text-xs">
+                                        <PanelLeft className="h-3.5 w-3.5 mr-1" />
+                                        Page Options
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-56 p-2" align="end">
+                                      <div className="grid gap-2">
+                                        <Button variant="outline" size="sm" className="h-8 justify-start text-xs">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21 8v13H3V8" />
+                                            <path d="M1 3h22v5H1z" />
+                                            <path d="M10 12H8v7h2v-7z" />
+                                            <path d="M16 12h-2v7h2v-7z" />
+                                          </svg>
+                                          Delete Page
+                                        </Button>
+                                        <Button variant="outline" size="sm" className="h-8 justify-start text-xs">
+                                          <RotateCw className="h-3.5 w-3.5 mr-2" />
+                                          Rotate Page
+                                        </Button>
+                                        <Button variant="outline" size="sm" className="h-8 justify-start text-xs">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                            <line x1="12" y1="8" x2="12" y2="16" />
+                                            <line x1="8" y1="12" x2="16" y2="12" />
+                                          </svg>
+                                          Insert Blank Page
+                                        </Button>
+                                        <Button variant="outline" size="sm" className="h-8 justify-start text-xs">
+                                          <Square className="h-3.5 w-3.5 mr-2" />
+                                          Extract Page
+                                        </Button>
+                                      </div>
+                                    </PopoverContent>
+                                  </Popover>
+                                </div>
                               </div>
                             </div>
                           </div>

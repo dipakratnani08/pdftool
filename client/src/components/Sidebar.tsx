@@ -3,7 +3,9 @@ import {
   FileText, FilePlus2, FileOutput, FileSearch, Edit, Lock, LayoutDashboard, 
   Image, PanelLeft, FileType, FileJson, RotateCw, 
   FileCode, Shield, File, Download, Plus, Settings, LogOut,
-  Home, Mail, HelpCircle
+  Home, Mail, HelpCircle, ChevronDown, ChevronRight, Trash2, 
+  Scissors, Wrench, FileLock, FileSignature, FileX, FileMinus, 
+  FilePlus, ScanLine, Hash, Text
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -118,6 +120,96 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, 
       </div>
       <span className="transition-all duration-200 group-hover:translate-x-0.5">{label}</span>
     </a>
+  );
+};
+
+interface SidebarCategoryProps {
+  title: string;
+  children: React.ReactNode;
+  gradient: string;
+  icon?: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+const SidebarCategory: React.FC<SidebarCategoryProps> = ({ 
+  title, 
+  children, 
+  gradient, 
+  icon,
+  defaultOpen = false 
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  // Extract colors from gradient string for the line decoration
+  const getGradientColors = () => {
+    if (gradient.includes('blue-purple')) {
+      return {
+        from: 'from-blue-400',
+        to: 'to-purple-400',
+        textFrom: 'from-blue-600',
+        textTo: 'to-purple-600'
+      };
+    } else if (gradient.includes('amber-red')) {
+      return {
+        from: 'from-amber-400',
+        to: 'to-red-400',
+        textFrom: 'from-amber-600',
+        textTo: 'to-red-600'
+      };
+    } else if (gradient.includes('green-cyan')) {
+      return {
+        from: 'from-green-400',
+        to: 'to-cyan-400',
+        textFrom: 'from-green-600',
+        textTo: 'to-cyan-600'
+      };
+    } else if (gradient.includes('purple-pink')) {
+      return {
+        from: 'from-purple-400',
+        to: 'to-pink-400',
+        textFrom: 'from-purple-600',
+        textTo: 'to-pink-600'
+      };
+    } else {
+      // Default blue-purple
+      return {
+        from: 'from-blue-400',
+        to: 'to-purple-400',
+        textFrom: 'from-blue-600',
+        textTo: 'to-purple-600'
+      };
+    }
+  };
+  
+  const colors = getGradientColors();
+  
+  return (
+    <div className="mb-1">
+      <button 
+        className="w-full flex items-center justify-between px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded-lg transition-colors group cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center">
+          <div className="flex items-center mb-1">
+            <div className={`h-0.5 w-2 bg-gradient-to-r ${colors.from} ${colors.to} rounded-full mr-1`}></div>
+            <div className={`h-0.5 w-3 bg-gradient-to-r ${colors.from} ${colors.to} rounded-full mr-1`}></div>
+          </div>
+          <h3 className={`text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r ${colors.textFrom} ${colors.textTo} uppercase tracking-wider ml-1`}>
+            {title}
+          </h3>
+        </div>
+        {isOpen ? (
+          <ChevronDown className="h-4 w-4 text-gray-500" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-gray-500" />
+        )}
+      </button>
+      <div className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-[1000px]' : 'max-h-0'}`}>
+        <div className="space-y-1 pl-2 pr-1">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 };
 

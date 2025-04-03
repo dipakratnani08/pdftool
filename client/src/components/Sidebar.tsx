@@ -1,5 +1,9 @@
 import { Link, useLocation } from "wouter";
-import { FileText, FilePlus2, FileOutput, FileSearch, Edit, Lock, LayoutDashboard, Plus, Settings, LogOut } from "lucide-react";
+import { 
+  FileText, FilePlus2, FileOutput, FileSearch, Edit, Lock, LayoutDashboard, 
+  Image, PanelLeft, FileType, FileJson, RotateCw, 
+  FileCode, Shield, File, Download, Plus, Settings, LogOut
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -83,8 +87,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
           onClick={handleItemClick}
         />
         
-        <div className="mt-8 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          PDF Operations
+        <div className="mt-6 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          Core PDF Tools
         </div>
 
         <SidebarItem 
@@ -112,14 +116,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
         />
         
         <SidebarItem 
-          href="/convert" 
-          icon={<FileSearch />} 
-          label="Convert PDF" 
-          isActive={location === "/convert"} 
-          onClick={handleItemClick}
-        />
-        
-        <SidebarItem 
           href="/edit" 
           icon={<Edit />} 
           label="Edit PDF" 
@@ -129,49 +125,123 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
         
         <SidebarItem 
           href="/secure" 
-          icon={<Lock />} 
-          label="Secure PDF" 
+          icon={<Shield />} 
+          label="Protect PDF" 
           isActive={location === "/secure"} 
           onClick={handleItemClick}
         />
-
-        <div className="mt-8 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          Account
+        
+        <SidebarItem 
+          href="/rotate" 
+          icon={<RotateCw />} 
+          label="Rotate PDF" 
+          isActive={location === "/rotate"} 
+          onClick={handleItemClick}
+        />
+        
+        <div className="mt-6 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          Convert From PDF
         </div>
         
         <SidebarItem 
-          href="/upgrade" 
-          icon={<Plus />} 
-          label="Upgrade Plan" 
-          isActive={location === "/upgrade"} 
+          href="/pdf-to-word" 
+          icon={<FileText />} 
+          label="PDF to Word" 
+          isActive={location === "/pdf-to-word"} 
           onClick={handleItemClick}
         />
         
         <SidebarItem 
-          href="/settings" 
-          icon={<Settings />} 
-          label="Settings" 
-          isActive={location === "/settings"} 
+          href="/pdf-to-excel" 
+          icon={<PanelLeft />} 
+          label="PDF to Excel" 
+          isActive={location === "/pdf-to-excel"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/pdf-to-html" 
+          icon={<FileType />} 
+          label="PDF to HTML" 
+          isActive={location === "/pdf-to-html"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/pdf-to-jpg" 
+          icon={<Image />} 
+          label="PDF to JPG" 
+          isActive={location === "/pdf-to-jpg"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/pdf-to-text" 
+          icon={<FileText />} 
+          label="PDF to Text" 
+          isActive={location === "/pdf-to-text"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/pdf-to-json" 
+          icon={<FileJson />} 
+          label="PDF to JSON" 
+          isActive={location === "/pdf-to-json"} 
+          onClick={handleItemClick}
+        />
+        
+        <div className="mt-6 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          Convert To PDF
+        </div>
+        
+        <SidebarItem 
+          href="/word-to-pdf" 
+          icon={<FileText />} 
+          label="Word to PDF" 
+          isActive={location === "/word-to-pdf"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/excel-to-pdf" 
+          icon={<PanelLeft />} 
+          label="Excel to PDF" 
+          isActive={location === "/excel-to-pdf"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/jpg-to-pdf" 
+          icon={<Image />} 
+          label="JPG to PDF" 
+          isActive={location === "/jpg-to-pdf"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/html-to-pdf" 
+          icon={<FileType />} 
+          label="HTML to PDF" 
+          isActive={location === "/html-to-pdf"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/text-to-pdf" 
+          icon={<FileText />} 
+          label="Text to PDF" 
+          isActive={location === "/text-to-pdf"} 
           onClick={handleItemClick}
         />
       </nav>
       
-      {/* User Profile */}
+      {/* App Info */}
       <div className="flex items-center px-4 py-4 border-t border-gray-200">
-        <Avatar className="h-8 w-8">
-          {user?.imageUrl ? (
-            <AvatarImage src={user.imageUrl} />
-          ) : (
-            <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
-          )}
-        </Avatar>
-        <div className="ml-3">
-          <p className="text-sm font-medium text-gray-700">{user?.displayName || 'User'}</p>
-          <p className="text-xs font-medium text-gray-500">{user?.planType || 'Free'} Plan</p>
+        <div className="ml-2">
+          <p className="text-sm font-medium text-gray-700">PDFCore Tools</p>
+          <p className="text-xs font-medium text-gray-500">Free PDF Utilities</p>
         </div>
-        <Button variant="ghost" size="icon" className="ml-auto">
-          <LogOut className="h-5 w-5 text-gray-400 hover:text-gray-500" />
-        </Button>
       </div>
     </aside>
   );

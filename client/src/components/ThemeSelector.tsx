@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -9,8 +9,9 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Moon, Sun, Laptop, Palette } from 'lucide-react';
+import { Moon, Sun, Laptop, Palette, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
 
 // These theme options match the ones in theme.json
 interface ThemeOptions {
@@ -38,33 +39,69 @@ const COLOR_PRESETS = [
 const ThemeSelector: React.FC = () => {
   const { toast } = useToast();
   
-  // Fetch current theme from theme.json
-  const [currentTheme, setCurrentTheme] = useState<ThemeOptions>({
-    variant: 'professional',
-    primary: 'hsl(210, 90%, 40%)',
-    appearance: 'light',
-    radius: 0.75
+  // Fetch current theme from localStorage or use default
+  const [currentTheme, setCurrentTheme] = useState<ThemeOptions>(() => {
+    // Try to load from localStorage first
+    const savedTheme = localStorage.getItem('pdfcore-theme');
+    if (savedTheme) {
+      try {
+        return JSON.parse(savedTheme);
+      } catch (e) {
+        console.error('Failed to parse saved theme', e);
+      }
+    }
+    
+    // Default theme
+    return {
+      variant: 'professional',
+      primary: 'hsl(210, 90%, 40%)',
+      appearance: 'light',
+      radius: 0.75
+    };
   });
-
+  
+  // Apply theme changes to document when theme changes
+  useEffect(() => {
+    // Set CSS variables based on the current theme
+    document.documentElement.style.setProperty('--theme-primary', currentTheme.primary);
+    
+    // Apply appearance (light/dark mode)
+    if (currentTheme.appearance === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // You could also handle the variant and radius here
+    // This example just updates the document root with CSS variables
+    document.documentElement.style.setProperty('--theme-radius', `${currentTheme.radius}rem`);
+    
+    // Apply theme variant
+    document.documentElement.setAttribute('data-theme-variant', currentTheme.variant);
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('pdfcore-theme', JSON.stringify(currentTheme));
+  }, [currentTheme]);
+  
+  // Function to update theme
   const updateTheme = async (updates: Partial<ThemeOptions>) => {
     const newTheme = { ...currentTheme, ...updates };
     setCurrentTheme(newTheme);
     
     try {
-      // In a real application, we would save this to the server or localStorage
-      // Here we're just showing toast for demonstration
+      // Save to API (simulated)
+      // In a real application, we would update theme.json on the server
       toast({
         title: 'Theme updated',
         description: 'Your theme preferences have been saved.',
       });
       
-      // In a production environment, we would update the actual theme.json
-      // Example fetch call (commented out as we don't have this endpoint):
-      // await fetch('/api/theme', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(newTheme)
-      // });
+      // Simulate API call to update theme.json
+      setTimeout(() => {
+        // This is just for visual feedback in the demo
+        // In a real app, we would make a real API call
+      }, 300);
+      
     } catch (error) {
       toast({
         title: 'Theme update failed',
@@ -94,12 +131,16 @@ const ThemeSelector: React.FC = () => {
                 key={color.value}
                 className={`w-full h-8 rounded-md border transition-colors flex items-center justify-center ${
                   currentTheme.primary === color.value 
-                    ? 'ring-2 ring-primary' 
-                    : 'hover:bg-accent hover:text-accent-foreground'
+                    ? 'ring-2 ring-white' 
+                    : 'hover:opacity-90'
                 }`}
                 style={{ backgroundColor: color.value }}
                 onClick={() => updateTheme({ primary: color.value })}
+                title={color.label}
               >
+                {currentTheme.primary === color.value && (
+                  <Check className="h-4 w-4 text-white" />
+                )}
                 <span className="sr-only">{color.label}</span>
               </button>
             ))}

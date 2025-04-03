@@ -26,14 +26,14 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, 
   return (
     <Link href={href}>
       <div
-        className={`flex items-center px-4 py-2 text-sm font-medium rounded-md group cursor-pointer ${
+        className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group cursor-pointer transition-all duration-200 ${
           isActive
-            ? "text-primary-500 bg-primary-50"
-            : "text-gray-700 hover:bg-gray-100"
+            ? "text-white bg-primary-500 shadow-md"
+            : "text-gray-700 hover:bg-gray-100 hover:translate-x-1"
         }`}
         onClick={onClick}
       >
-        <span className={`mr-3 h-5 w-5 ${isActive ? "text-primary-500" : "text-gray-500"}`}>
+        <span className={`mr-3 h-5 w-5 ${isActive ? "text-white" : "text-primary-400"}`}>
           {icon}
         </span>
         {label}
@@ -68,12 +68,15 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
   return (
     <aside className={`${mobile ? "flex" : "hidden lg:flex"} flex-col w-64 border-r border-gray-200 bg-white`}>
       {/* Logo */}
-      <div className="px-6 py-6">
+      <div className="px-6 py-6 bg-gradient-to-r from-primary-500 to-primary-600">
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded bg-primary-500 flex items-center justify-center">
-            <FileText className="h-5 w-5 text-white" />
+          <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-md">
+            <FileText className="h-6 w-6 text-primary-500" />
           </div>
-          <h1 className="ml-2 text-xl font-bold text-gray-900">PDFCore</h1>
+          <div className="ml-3">
+            <h1 className="text-xl font-bold text-white">PDFCore</h1>
+            <p className="text-xs text-primary-100">All-in-one PDF Tools</p>
+          </div>
         </div>
       </div>
       
@@ -87,8 +90,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
           onClick={handleItemClick}
         />
         
-        <div className="mt-6 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          Core PDF Tools
+        <div className="mt-6 mb-3 px-4">
+          <div className="flex items-center mb-1">
+            <div className="h-0.5 w-2 bg-primary-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-primary-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-primary-400 rounded-full"></div>
+          </div>
+          <h3 className="text-xs font-bold text-primary-600 uppercase tracking-wider">Core PDF Tools</h3>
         </div>
 
         <SidebarItem 
@@ -139,8 +147,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
           onClick={handleItemClick}
         />
         
-        <div className="mt-6 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          Convert From PDF
+        <div className="mt-6 mb-3 px-4">
+          <div className="flex items-center mb-1">
+            <div className="h-0.5 w-2 bg-primary-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-primary-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-primary-400 rounded-full"></div>
+          </div>
+          <h3 className="text-xs font-bold text-primary-600 uppercase tracking-wider">Convert From PDF</h3>
         </div>
         
         <SidebarItem 
@@ -191,8 +204,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
           onClick={handleItemClick}
         />
         
-        <div className="mt-6 mb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          Convert To PDF
+        <div className="mt-6 mb-3 px-4">
+          <div className="flex items-center mb-1">
+            <div className="h-0.5 w-2 bg-primary-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-primary-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-primary-400 rounded-full"></div>
+          </div>
+          <h3 className="text-xs font-bold text-primary-600 uppercase tracking-wider">Convert To PDF</h3>
         </div>
         
         <SidebarItem 
@@ -237,10 +255,15 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       </nav>
       
       {/* App Info */}
-      <div className="flex items-center px-4 py-4 border-t border-gray-200">
-        <div className="ml-2">
-          <p className="text-sm font-medium text-gray-700">PDFCore Tools</p>
-          <p className="text-xs font-medium text-gray-500">Free PDF Utilities</p>
+      <div className="flex items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+            <FileText className="h-4 w-4 text-primary-500" />
+          </div>
+          <div className="ml-3">
+            <p className="text-sm font-medium text-gray-800">PDFCore Tools</p>
+            <p className="text-xs font-medium text-primary-500">Free PDF Utilities</p>
+          </div>
         </div>
       </div>
     </aside>

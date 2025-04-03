@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, HelpCircle } from 'lucide-react';
+import { FileText, HelpCircle, Download, Folder } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import PDFDropzone from '@/components/PDFDropzone';
 import FileList, { FileItem } from '@/components/FileList';
@@ -8,10 +8,21 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { splitPdf, downloadFile } from '@/lib/pdf';
+import { splitPdf, downloadFile, downloadSplitFilesAsZip } from '@/lib/pdf';
 import { queryClient } from '@/lib/queryClient';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Type for split result
+interface SplitResult {
+  message: string;
+  files: FileItem[];
+  operation: {
+    id: number;
+    status: string;
+    message: string;
+  };
+}
 
 const SplitPDF: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
@@ -21,12 +32,14 @@ const SplitPDF: React.FC = () => {
   const { toast } = useToast();
   
   // Fetch all available PDFs
-  const { data: allFiles, isLoading } = useQuery({
+  const { data: allFiles, isLoading } = useQuery<FileItem[]>({
     queryKey: ['/api/files'],
     staleTime: 30000, // 30 seconds
   });
   
   // Split mutation
+  const [splitResult, setSplitResult] = useState<SplitResult | null>(null);
+  
   const splitMutation = useMutation({
     mutationFn: async () => {
       if (!selectedFile) {
@@ -68,9 +81,8 @@ const SplitPDF: React.FC = () => {
         description: `Created ${data.files.length} new files`,
       });
       
-      // Reset selection
-      setSelectedFile(null);
-      setPageRanges('');
+      // Save split result for download
+      setSplitResult(data);
       
       // Invalidate queries to refresh file list and activities
       queryClient.invalidateQueries({ queryKey: ['/api/files'] });
@@ -84,6 +96,44 @@ const SplitPDF: React.FC = () => {
       });
     }
   });
+  
+  // Handle ZIP download
+  const handleDownloadZip = async () => {
+    if (!splitResult || !splitResult.files || splitResult.files.length === 0) {
+      toast({
+        title: "Download failed",
+        description: "No split files available to download",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      const fileIds = splitResult.files.map((file) => file.id);
+      const originalFileName = selectedFile?.fileName || 'split-files';
+      const zipFileName = `${originalFileName.replace('.pdf', '')}-split.zip`;
+      
+      await downloadSplitFilesAsZip(fileIds, zipFileName);
+      
+      toast({
+        title: "Download started",
+        description: "Your ZIP file is being downloaded",
+      });
+    } catch (error) {
+      toast({
+        title: "Download failed",
+        description: error instanceof Error ? error.message : "Failed to download ZIP file",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Reset the form
+  const handleReset = () => {
+    setSelectedFile(null);
+    setPageRanges('');
+    setSplitResult(null);
+  };
   
   // Handle file upload
   const handleUploadComplete = (uploadedFiles: FileItem[]) => {
@@ -221,7 +271,7 @@ const SplitPDF: React.FC = () => {
             </div>
           </CardContent>
           
-          {selectedFile && (
+          {selectedFile && !splitResult && (
             <CardFooter className="flex justify-center border-t border-gray-200 px-6 py-4">
               <Button 
                 onClick={() => splitMutation.mutate()}
@@ -231,6 +281,60 @@ const SplitPDF: React.FC = () => {
                 <FileText className="h-5 w-5 mr-2" />
                 {splitMutation.isPending ? 'Splitting...' : 'Split PDF'}
               </Button>
+            </CardFooter>
+          )}
+          
+          {splitResult && splitResult.files && splitResult.files.length > 0 && (
+            <CardFooter className="flex flex-col items-center justify-center border-t border-gray-200 px-6 py-4">
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 text-center">
+                  Successfully split into {splitResult.files.length} files.
+                  Download them individually or as a ZIP archive.
+                </p>
+              </div>
+              <div className="flex space-x-4">
+                <Button
+                  onClick={handleDownloadZip}
+                  variant="default"
+                  className="px-4 py-2"
+                >
+                  <Folder className="h-5 w-5 mr-2" />
+                  Download All as ZIP
+                </Button>
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                  className="px-4 py-2"
+                >
+                  Start Over
+                </Button>
+              </div>
+              
+              {splitResult.files.length > 0 && (
+                <div className="mt-6 w-full">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Split Files:</h3>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {splitResult.files.map((file) => (
+                      <div
+                        key={file.id}
+                        className="flex items-center justify-between p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                      >
+                        <div className="flex items-center">
+                          <FileText className="h-5 w-5 text-gray-400 mr-2" />
+                          <span className="text-sm truncate">{file.fileName}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => downloadFile(file.id)}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardFooter>
           )}
         </Card>

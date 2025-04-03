@@ -84,6 +84,44 @@ export async function splitPdf(fileId: number, options: any): Promise<any> {
 }
 
 /**
+ * Download split PDF files as a ZIP archive
+ */
+export async function downloadSplitFilesAsZip(fileIds: number[], fileName: string = "split-files.zip"): Promise<void> {
+  try {
+    const response = await fetch('/api/download-zip', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fileIds, zipFileName: fileName }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to download ZIP: ${response.statusText}`);
+    }
+
+    // Create a blob from the response
+    const blob = await response.blob();
+    
+    // Create a download link and trigger download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  } catch (error) {
+    console.error("Error downloading ZIP:", error);
+    throw error;
+  }
+}
+
+/**
  * Compress a PDF file
  */
 export async function compressPdf(fileId: number, options: any = {}): Promise<any> {

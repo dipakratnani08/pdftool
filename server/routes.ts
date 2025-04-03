@@ -9,6 +9,7 @@ import multer from "multer";
 import os from "os";
 import { PDFDocument } from "pdf-lib";
 import { OperationTypes } from "@shared/schema";
+import JSZip from "jszip";
 
 // Get directory path
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -373,9 +374,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error downloading file" });
     }
   });
+  
+  // API to download split PDFs as a ZIP archive
+  app.post("/api/download-zip", async (req, res) => {
+    try {
+      const schema = z.object({
+        fileIds: z.array(z.number()),
+        zipFileName: z.string().optional(),
+      });
+      
+      const { fileIds, zipFileName = "split-files.zip" } = schema.parse(req.body);
+      
+      if (!fileIds || fileIds.length === 0) {
+        return res.status(400).json({ message: "No files specified" });
+      }
+      
+      // Get all files
+      const files = await Promise.all(fileIds.map(id => storage.getPdfFile(id)));
+      const validFiles = files.filter(Boolean);
+      
+      if (validFiles.length === 0) {
+        return res.status(404).json({ message: "No valid files found" });
+      }
+      
+      // Create a ZIP file
+      const zip = new JSZip();
+      
+      // Add files to ZIP
+      for (const file of validFiles) {
+        if (file && file.storageLocation) {
+          const fileContent = await fs.readFile(file.storageLocation);
+          zip.file(file.fileName, fileContent);
+        }
+      }
+      
+      // Generate ZIP file
+      const zipContent = await zip.generateAsync({ type: "nodebuffer" });
+      
+      // Send ZIP file
+      res.setHeader('Content-Disposition', `attachment; filename="${zipFileName}"`);
+      res.setHeader('Content-Type', 'application/zip');
+      res.send(zipContent);
+    } catch (error) {
+      console.error("ZIP download error:", error);
+      res.status(500).json({ message: "Error creating ZIP file" });
+    }
+  });
 
   // API to get recent activities
-  app.get("/api/activities", async (_req, res) => {
+  app.get("/api/activities", async (req, res) => {
     try {
       const userId = 1; // Using demo user
       const limit = parseInt(req.query.limit as string) || 10;

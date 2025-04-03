@@ -37,11 +37,20 @@ const upload = multer({
   storage: storage_config,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (_req, file, cb) => {
-    // Accept PDF files only
-    if (file.mimetype === "application/pdf") {
+    // Accept PDF and image files
+    const allowedMimeTypes = [
+      "application/pdf", // PDF
+      "image/jpeg", "image/jpg", // JPG/JPEG
+      "image/png", // PNG
+      "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOC/DOCX
+      "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLS/XLSX
+      "text/html" // HTML
+    ];
+    
+    if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF files are allowed!"));
+      cb(new Error("Only PDF, image, Word, Excel, and HTML files are allowed!"));
     }
   }
 });
@@ -79,10 +88,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const filesData = await Promise.all(uploadedFiles.map(async (file) => {
         try {
-          // Read PDF and get page count
-          const pdfBytes = await fs.readFile(file.path);
-          const pdfDoc = await PDFDocument.load(pdfBytes);
-          const pageCount = pdfDoc.getPageCount();
+          let pageCount = 1; // Default for non-PDF files
+          
+          // Process different file types
+          if (file.mimetype === "application/pdf") {
+            // PDF file processing
+            const pdfBytes = await fs.readFile(file.path);
+            const pdfDoc = await PDFDocument.load(pdfBytes);
+            pageCount = pdfDoc.getPageCount();
+          } else if (file.mimetype.startsWith("image/")) {
+            // Image file - treat as 1 page
+            pageCount = 1;
+          } else {
+            // Other file types - use default page count
+            pageCount = 1;
+          }
 
           // Save file info to storage
           const pdfFile = await storage.createPdfFile({
@@ -101,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             pageCount: pdfFile.pageCount,
           };
         } catch (error) {
-          console.error("Error processing PDF file:", error);
+          console.error(`Error processing file ${file.originalname}:`, error);
           return null;
         }
       }));

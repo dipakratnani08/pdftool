@@ -2,7 +2,8 @@ import { Link, useLocation } from "wouter";
 import { 
   FileText, FilePlus2, FileOutput, FileSearch, Edit, Lock, LayoutDashboard, 
   Image, PanelLeft, FileType, FileJson, RotateCw, 
-  FileCode, Shield, File, Download, Plus, Settings, LogOut
+  FileCode, Shield, File, Download, Plus, Settings, LogOut,
+  Home, Mail, HelpCircle
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -162,9 +163,17 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         <SidebarItem 
           href="/" 
+          icon={<Home />} 
+          label="Home" 
+          isActive={location === "/"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/dashboard" 
           icon={<LayoutDashboard />} 
           label="Dashboard" 
-          isActive={location === "/"} 
+          isActive={location === "/dashboard"} 
           onClick={handleItemClick}
         />
         
@@ -330,21 +339,46 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
           isActive={location === "/text-to-pdf"} 
           onClick={handleItemClick}
         />
+        
+        <div className="mt-6 mb-3 px-4">
+          <div className="flex items-center mb-1">
+            <div className="h-0.5 w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
+          </div>
+          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 uppercase tracking-wider">Information</h3>
+        </div>
+        
+        <SidebarItem 
+          href="/contact" 
+          icon={<Mail />} 
+          label="Contact Us" 
+          isActive={location === "/contact"} 
+          onClick={handleItemClick}
+        />
+        
+        <SidebarItem 
+          href="/help" 
+          icon={<HelpCircle />} 
+          label="Help & FAQ" 
+          isActive={location === "/help"} 
+          onClick={handleItemClick}
+        />
       </nav>
       
       {/* App Info */}
       <div className="flex items-center px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
         <div className="flex items-center">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md animate-pulse-slow">
             <FileText className="h-5 w-5 text-white" />
           </div>
           <div className="ml-3">
-            <p className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">PDFCore Tools</p>
+            <p className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 animate-gradient-text">PDFCore Tools</p>
             <div className="flex items-center mt-0.5">
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Free
+                100% Free
               </span>
-              <span className="text-xs font-medium text-gray-500 ml-1.5">PDF Utilities</span>
+              <span className="text-xs font-medium text-gray-500 ml-1.5">No Registration Required</span>
             </div>
           </div>
         </div>

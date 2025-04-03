@@ -26,37 +26,37 @@ const Dashboard: React.FC = () => {
   const pdfTools = [
     {
       title: "Merge PDFs",
-      description: "Combine multiple PDF files into a single document.",
+      description: "Combine multiple PDF files into a single document - perfect for creating reports, portfolios, or ebooks from separate files in seconds.",
       icon: FilePlus2,
       href: "/merge"
     },
     {
       title: "Split PDF",
-      description: "Separate PDF pages into individual files.",
+      description: "Separate PDF pages into individual files or extract specific pages - ideal for sharing specific sections from large documents or presentations.",
       icon: FileText,
       href: "/split"
     },
     {
       title: "Compress PDF",
-      description: "Reduce file size while maintaining quality.",
+      description: "Reduce file size while maintaining quality - optimize PDFs for email sharing or website uploads without sacrificing readability.",
       icon: FileOutput,
       href: "/compress"
     },
     {
       title: "Convert PDF",
-      description: "Transform PDFs to/from various formats.",
+      description: "Transform PDFs to Word, Excel, HTML, JPG and vice versa - seamlessly switch between formats to edit content or extract information.",
       icon: FileSearch,
       href: "/convert"
     },
     {
       title: "Edit PDF",
-      description: "Modify text, add images, and annotate PDFs.",
+      description: "Modify text, add images, and annotate PDFs - make quick corrections, highlight important information, or add custom comments to any document.",
       icon: Edit,
       href: "/edit"
     },
     {
       title: "Secure PDF",
-      description: "Encrypt, unlock, and add digital signatures.",
+      description: "Encrypt, unlock, add passwords and digital signatures - protect sensitive documents or remove security from PDFs when needed.",
       icon: Lock,
       href: "/secure"
     }
@@ -123,9 +123,16 @@ const Dashboard: React.FC = () => {
           <div className="relative">
             <h2 className="text-xl font-semibold text-blue-800 mb-2">Welcome to PDFCore Tools</h2>
             <p className="text-blue-700 max-w-2xl">
-              Your all-in-one platform for managing, editing, and converting PDF documents. 
-              Use our comprehensive toolkit to manipulate your PDFs with just a few clicks.
+              Your all-in-one platform for managing, editing, and converting PDF documents - 
+              100% free for everyone with no limitations! Use our comprehensive toolkit to 
+              manipulate your PDFs with just a few clicks, no registration required.
             </p>
+            <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium animate-pulse-slow">
+              <svg className="h-4 w-4 mr-1.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Free Forever - No Ads - No Registration</span>
+            </div>
             <div className="mt-4 flex space-x-3">
               <Link href="/merge">
                 <a className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 btn-animation hover-card-lift">
@@ -182,14 +189,12 @@ const Dashboard: React.FC = () => {
                 
                 <StatsCard 
                   title="Current Plan"
-                  value="Free"
+                  value="Always Free"
                   icon={<ArrowUp className="h-5 w-5 text-purple-500" />}
                   additionalInfo={
-                    <Link href="/upgrade">
-                      <a className="text-sm text-primary-600 hover:text-primary-700 font-medium">
-                        Upgrade to Pro →
-                      </a>
-                    </Link>
+                    <span className="text-sm text-green-600 font-medium">
+                      100% Free Forever - No Limitations
+                    </span>
                   }
                 />
               </>

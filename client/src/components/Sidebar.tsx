@@ -60,22 +60,63 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, 
     }
   };
   
+  // Function to get the gradient background based on label
+  const getGradient = () => {
+    if (!isActive) return "";
+    
+    switch(true) {
+      case label.includes("Merge"):
+        return "from-blue-500 to-blue-600";
+      case label.includes("Split"):
+        return "from-purple-500 to-purple-600";
+      case label.includes("Compress"):
+        return "from-green-500 to-green-600";
+      case label.includes("Edit"):
+        return "from-amber-500 to-amber-600";
+      case label.includes("Protect"):
+        return "from-red-500 to-red-600";
+      case label.includes("Rotate"):
+        return "from-indigo-500 to-indigo-600";
+      case label.includes("Word"):
+        return "from-blue-600 to-blue-700";
+      case label.includes("Excel"):
+        return "from-green-600 to-green-700";
+      case label.includes("HTML"):
+        return "from-orange-500 to-orange-600";
+      case label.includes("JPG"):
+      case label.includes("Image"):
+        return "from-pink-500 to-pink-600";
+      case label.includes("Text"):
+        return "from-gray-600 to-gray-700";
+      case label.includes("JSON"):
+        return "from-yellow-500 to-yellow-600";
+      case label.includes("Dashboard"):
+        return "from-cyan-500 to-cyan-600";
+      default:
+        return "from-primary-500 to-primary-600";
+    }
+  };
+  
   return (
-    <Link href={href}>
-      <div 
-        className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group cursor-pointer transition-all duration-200 w-full ${
-          isActive
-            ? "text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-md"
-            : "text-gray-700 hover:bg-gray-100"
-        }`}
-        onClick={onClick}
-      >
-        <div className={`mr-3 flex-shrink-0 h-5 w-5 transition-transform group-hover:scale-110 ${getIconColor()}`}>
-          {icon}
-        </div>
-        <span className="transition-all duration-200 group-hover:translate-x-0.5">{label}</span>
+    <a 
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        // Use manual navigation to prevent whitespace issue
+        window.history.pushState({}, '', href);
+        if (onClick) onClick();
+      }}
+      className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group cursor-pointer transition-all duration-200 w-full ${
+        isActive
+          ? `text-white bg-gradient-to-r ${getGradient()} shadow-md`
+          : "text-gray-700 hover:bg-gray-100"
+      }`}
+    >
+      <div className={`mr-3 flex-shrink-0 h-5 w-5 transition-transform group-hover:scale-110 ${getIconColor()}`}>
+        {icon}
       </div>
-    </Link>
+      <span className="transition-all duration-200 group-hover:translate-x-0.5">{label}</span>
+    </a>
   );
 };
 

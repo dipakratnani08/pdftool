@@ -155,46 +155,56 @@ const SplitPDF: React.FC = () => {
   return (
     <div className="py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Split PDF</h1>
+        <div className="flex items-center">
+          <div className="h-8 w-1.5 bg-gradient-to-b from-blue-400 to-purple-600 rounded-full mr-3"></div>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Split PDF</h1>
+        </div>
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card className="mt-10">
-          <CardHeader className="border-b border-gray-200">
+        <Card className="mt-6 border-0 shadow-lg overflow-hidden">
+          <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Split PDF</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-xl font-bold text-gray-800">Split PDF Files</CardTitle>
+                <CardDescription className="text-gray-600">
                   Separate a PDF into multiple documents by pages or page ranges.
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm">
-                <HelpCircle className="h-4 w-4 mr-1" />
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-100">
+                <HelpCircle className="h-4 w-4 mr-1 text-blue-500" />
                 Help
               </Button>
             </div>
           </CardHeader>
           
-          <CardContent className="py-6">
+          <CardContent className="py-8">
             <div className="max-w-2xl mx-auto">
               {/* Dropzone */}
               {!selectedFile && (
-                <PDFDropzone onUploadComplete={handleUploadComplete} />
+                <div className="border-2 border-dashed border-gray-300 rounded-xl bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+                  <PDFDropzone onUploadComplete={handleUploadComplete} />
+                </div>
               )}
               
               {/* Existing files selection */}
               {!selectedFile && allFiles && allFiles.length > 0 && (
                 <div className="mt-8 mb-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Or select from your files:</h3>
+                  <div className="flex items-center mb-3">
+                    <div className="h-4 w-1 bg-gradient-to-b from-green-400 to-cyan-400 rounded-full mr-2"></div>
+                    <h3 className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-cyan-600">Or select from your files:</h3>
+                  </div>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {allFiles.map(file => (
                       <button
                         key={file.id}
-                        className="flex items-center p-2 border border-gray-300 rounded-md hover:bg-gray-50 text-left"
+                        className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 text-left shadow-sm transition-all duration-200 hover:shadow"
                         onClick={() => handleSelectFile(file)}
                       >
-                        <FileText className="h-5 w-5 text-gray-400 mr-2" />
-                        <span className="text-sm truncate">{file.fileName}</span>
+                        <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                          <FileText className="h-4 w-4 text-blue-500" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700 truncate">{file.fileName}</span>
                       </button>
                     ))}
                   </div>
@@ -205,23 +215,33 @@ const SplitPDF: React.FC = () => {
               {selectedFile && (
                 <>
                   <div className="mt-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Selected PDF to split:</h3>
-                    <FileList 
-                      files={[selectedFile]} 
-                      onRemove={() => setSelectedFile(null)}
-                      allowReordering={false}
-                    />
+                    <div className="flex items-center mb-3">
+                      <div className="h-4 w-1 bg-gradient-to-b from-blue-400 to-purple-400 rounded-full mr-2"></div>
+                      <h3 className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Selected PDF to split:</h3>
+                    </div>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-1 rounded-lg">
+                      <FileList 
+                        files={[selectedFile]} 
+                        onRemove={() => setSelectedFile(null)}
+                        allowReordering={false}
+                      />
+                    </div>
                   </div>
                   
                   {/* Options */}
-                  <div className="mt-6">
-                    <div className="bg-gray-50 rounded-md p-4 mb-6">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Split Options</h4>
-                      <div className="grid grid-cols-1 gap-4">
+                  <div className="mt-8">
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 mb-6 shadow-sm border border-gray-200">
+                      <div className="flex items-center mb-4">
+                        <div className="h-5 w-5 rounded-full bg-gradient-to-r from-amber-400 to-red-400 flex items-center justify-center mr-2 shadow-sm">
+                          <div className="h-2 w-2 bg-white rounded-full"></div>
+                        </div>
+                        <h4 className="text-base font-semibold text-gray-800">Split Options</h4>
+                      </div>
+                      <div className="grid grid-cols-1 gap-5">
                         <div>
-                          <Label htmlFor="split-mode">Split Mode</Label>
+                          <Label htmlFor="split-mode" className="text-sm font-medium text-gray-700">Split Mode</Label>
                           <Select value={splitMode} onValueChange={setSplitMode}>
-                            <SelectTrigger id="split-mode" className="mt-1">
+                            <SelectTrigger id="split-mode" className="mt-2 border-gray-300 bg-white">
                               <SelectValue placeholder="Select split mode" />
                             </SelectTrigger>
                             <SelectContent>
@@ -233,33 +253,38 @@ const SplitPDF: React.FC = () => {
                         </div>
                         
                         {splitMode === 'ranges' && (
-                          <div>
-                            <Label htmlFor="page-ranges">Page Ranges</Label>
+                          <div className="bg-white p-4 rounded-md border border-gray-200 shadow-sm">
+                            <Label htmlFor="page-ranges" className="text-sm font-medium text-gray-700">Page Ranges</Label>
                             <Input
                               id="page-ranges"
                               placeholder="e.g. 1-3,4-8,9-12"
                               value={pageRanges}
                               onChange={handlePageRangesChange}
-                              className="mt-1"
+                              className="mt-2 border-gray-300"
                             />
-                            <p className="text-xs text-gray-500 mt-1">
-                              Enter page ranges separated by commas (e.g. 1-3,4-8,9-12)
-                            </p>
+                            <div className="flex items-center mt-2">
+                              <div className="h-3 w-3 rounded-full bg-amber-100 flex items-center justify-center mr-2">
+                                <div className="h-1.5 w-1.5 bg-amber-500 rounded-full"></div>
+                              </div>
+                              <p className="text-xs text-gray-600">
+                                Enter page ranges separated by commas (e.g. 1-3,4-8,9-12)
+                              </p>
+                            </div>
                           </div>
                         )}
                         
                         {splitMode === 'every' && (
-                          <div>
-                            <Label htmlFor="every-pages">Split every</Label>
-                            <div className="flex items-center mt-1">
+                          <div className="bg-white p-4 rounded-md border border-gray-200 shadow-sm">
+                            <Label htmlFor="every-pages" className="text-sm font-medium text-gray-700">Split every</Label>
+                            <div className="flex items-center mt-2">
                               <Input
                                 id="every-pages"
                                 type="number"
                                 min="1"
                                 defaultValue="2"
-                                className="w-24"
+                                className="w-24 border-gray-300"
                               />
-                              <span className="ml-2">pages</span>
+                              <span className="ml-3 text-sm text-gray-700 font-medium">pages</span>
                             </div>
                           </div>
                         )}
@@ -272,11 +297,11 @@ const SplitPDF: React.FC = () => {
           </CardContent>
           
           {selectedFile && !splitResult && (
-            <CardFooter className="flex justify-center border-t border-gray-200 px-6 py-4">
+            <CardFooter className="flex justify-center border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-6">
               <Button 
                 onClick={() => splitMutation.mutate()}
                 disabled={splitMutation.isPending}
-                className="px-4 py-2"
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <FileText className="h-5 w-5 mr-2" />
                 {splitMutation.isPending ? 'Splitting...' : 'Split PDF'}
@@ -285,18 +310,20 @@ const SplitPDF: React.FC = () => {
           )}
           
           {splitResult && splitResult.files && splitResult.files.length > 0 && (
-            <CardFooter className="flex flex-col items-center justify-center border-t border-gray-200 px-6 py-4">
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 text-center">
-                  Successfully split into {splitResult.files.length} files.
-                  Download them individually or as a ZIP archive.
-                </p>
+            <CardFooter className="flex flex-col items-center justify-center border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-6">
+              <div className="mb-5">
+                <div className="flex items-center justify-center bg-green-100 text-green-800 rounded-full px-4 py-2">
+                  <div className="h-2 w-2 bg-green-500 rounded-full mr-2"></div>
+                  <p className="text-sm font-medium">
+                    Successfully split into {splitResult.files.length} files
+                  </p>
+                </div>
               </div>
               <div className="flex space-x-4">
                 <Button
                   onClick={handleDownloadZip}
                   variant="default"
-                  className="px-4 py-2"
+                  className="px-5 py-2.5 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <Folder className="h-5 w-5 mr-2" />
                   Download All as ZIP
@@ -304,29 +331,35 @@ const SplitPDF: React.FC = () => {
                 <Button
                   onClick={handleReset}
                   variant="outline"
-                  className="px-4 py-2"
+                  className="px-5 py-2.5 border-gray-300 hover:bg-gray-100"
                 >
                   Start Over
                 </Button>
               </div>
               
               {splitResult.files.length > 0 && (
-                <div className="mt-6 w-full">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Split Files:</h3>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="mt-8 w-full">
+                  <div className="flex items-center mb-3">
+                    <div className="h-4 w-1 bg-gradient-to-b from-green-400 to-teal-400 rounded-full mr-2"></div>
+                    <h3 className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-teal-600">Split Files:</h3>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {splitResult.files.map((file) => (
                       <div
                         key={file.id}
-                        className="flex items-center justify-between p-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                        className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:shadow-md hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 transition-all duration-200"
                       >
                         <div className="flex items-center">
-                          <FileText className="h-5 w-5 text-gray-400 mr-2" />
-                          <span className="text-sm truncate">{file.fileName}</span>
+                          <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                            <FileText className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-700 truncate">{file.fileName}</span>
                         </div>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => downloadFile(file.id)}
+                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                         >
                           <Download className="h-4 w-4" />
                         </Button>

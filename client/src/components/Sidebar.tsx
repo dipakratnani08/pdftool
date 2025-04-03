@@ -23,17 +23,54 @@ interface SidebarItemProps {
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, isActive, onClick }) => {
+  // Function to determine icon color based on label
+  const getIconColor = () => {
+    if (isActive) return "text-white";
+    
+    switch(true) {
+      case label.includes("Merge"):
+        return "text-blue-500";
+      case label.includes("Split"):
+        return "text-purple-500";
+      case label.includes("Compress"):
+        return "text-green-500";
+      case label.includes("Edit"):
+        return "text-amber-500";
+      case label.includes("Protect"):
+        return "text-red-500";
+      case label.includes("Rotate"):
+        return "text-indigo-500";
+      case label.includes("Word"):
+        return "text-blue-600";
+      case label.includes("Excel"):
+        return "text-green-600";
+      case label.includes("HTML"):
+        return "text-orange-500";
+      case label.includes("JPG"):
+      case label.includes("Image"):
+        return "text-pink-500";
+      case label.includes("Text"):
+        return "text-gray-600";
+      case label.includes("JSON"):
+        return "text-yellow-500";
+      case label.includes("Dashboard"):
+        return "text-cyan-500";
+      default:
+        return "text-primary-400";
+    }
+  };
+  
   return (
     <Link href={href}>
-      <div
-        className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group cursor-pointer transition-all duration-200 ${
+      <div 
+        className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg group cursor-pointer transition-all duration-200 w-full ${
           isActive
-            ? "text-white bg-primary-500 shadow-md"
+            ? "text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-md"
             : "text-gray-700 hover:bg-gray-100"
         }`}
         onClick={onClick}
       >
-        <div className={`mr-3 flex-shrink-0 h-5 w-5 transition-transform group-hover:scale-110 ${isActive ? "text-white" : "text-primary-400"}`}>
+        <div className={`mr-3 flex-shrink-0 h-5 w-5 transition-transform group-hover:scale-110 ${getIconColor()}`}>
           {icon}
         </div>
         <span className="transition-all duration-200 group-hover:translate-x-0.5">{label}</span>
@@ -92,11 +129,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
         
         <div className="mt-6 mb-3 px-4">
           <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-primary-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-primary-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-primary-400 rounded-full"></div>
+            <div className="h-0.5 w-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
           </div>
-          <h3 className="text-xs font-bold text-primary-600 uppercase tracking-wider">Core PDF Tools</h3>
+          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 uppercase tracking-wider">Core PDF Tools</h3>
         </div>
 
         <SidebarItem 
@@ -149,11 +186,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
         
         <div className="mt-6 mb-3 px-4">
           <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-primary-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-primary-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-primary-400 rounded-full"></div>
+            <div className="h-0.5 w-2 bg-gradient-to-r from-amber-400 to-red-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-gradient-to-r from-amber-400 to-red-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-gradient-to-r from-amber-400 to-red-400 rounded-full"></div>
           </div>
-          <h3 className="text-xs font-bold text-primary-600 uppercase tracking-wider">Convert From PDF</h3>
+          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-red-600 uppercase tracking-wider">Convert From PDF</h3>
         </div>
         
         <SidebarItem 
@@ -206,11 +243,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
         
         <div className="mt-6 mb-3 px-4">
           <div className="flex items-center mb-1">
-            <div className="h-0.5 w-2 bg-primary-400 rounded-full mr-1"></div>
-            <div className="h-0.5 w-3 bg-primary-400 rounded-full mr-1"></div>
-            <div className="h-0.5 flex-grow bg-primary-400 rounded-full"></div>
+            <div className="h-0.5 w-2 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full mr-1"></div>
+            <div className="h-0.5 w-3 bg-gradient-to-r from-green-400 to-cyan-400 rounded-full mr-1"></div>
+            <div className="h-0.5 flex-grow bg-gradient-to-r from-green-400 to-cyan-400 rounded-full"></div>
           </div>
-          <h3 className="text-xs font-bold text-primary-600 uppercase tracking-wider">Convert To PDF</h3>
+          <h3 className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-cyan-600 uppercase tracking-wider">Convert To PDF</h3>
         </div>
         
         <SidebarItem 
@@ -255,14 +292,19 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       </nav>
       
       {/* App Info */}
-      <div className="flex items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div className="flex items-center px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-            <FileText className="h-4 w-4 text-primary-500" />
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+            <FileText className="h-5 w-5 text-white" />
           </div>
           <div className="ml-3">
-            <p className="text-sm font-medium text-gray-800">PDFCore Tools</p>
-            <p className="text-xs font-medium text-primary-500">Free PDF Utilities</p>
+            <p className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">PDFCore Tools</p>
+            <div className="flex items-center mt-0.5">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                Free
+              </span>
+              <span className="text-xs font-medium text-gray-500 ml-1.5">PDF Utilities</span>
+            </div>
           </div>
         </div>
       </div>
